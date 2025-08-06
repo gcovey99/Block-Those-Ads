@@ -1,14 +1,13 @@
 {
   "manifest_version": 3,
   "name": "Block Those Ads",
-  "version": "1.0",
+  "version": "1.2",
   "description": "Block Those Ads removes most ads on any website by blocking known ad domains and removing ad elements from the page.",
   "icons": {
     "128": "icon128.png"
   },
   "permissions": [
-    "declarativeNetRequest",
-    "storage"
+    "declarativeNetRequest"
   ],
   "host_permissions": [
     "<all_urls>"

@@ -1,11 +1,8 @@
-// popup.js
 
-// ---- Element refs ----
 const domainInput = document.getElementById('domainInput');
 const addBtn       = document.getElementById('addBtn');
 const siteList     = document.getElementById('siteList');
 
-// ---- Render the saved list ----
 function renderList() {
   chrome.storage.sync.get({ allowedSites: [] }, ({ allowedSites }) => {
     siteList.innerHTML = '';
@@ -29,7 +26,6 @@ function addSite() {
   let url = domainInput.value.trim();
   if (!url) return;
 
-  // Normalize to origin + wildcard
   try {
     const u = new URL(url);
     url = `${u.origin}/*`;
@@ -64,7 +60,7 @@ function removeSite(origin) {
   });
 }
 
-// ---- Initialize on popup open ----
+// ---- popup open ----
 document.addEventListener('DOMContentLoaded', () => {
   renderList();
 
