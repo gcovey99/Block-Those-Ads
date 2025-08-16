@@ -34,24 +34,20 @@ chrome.storage.onChanged.addListener(changes => {
   newV.filter(x => !oldV.includes(x)).forEach(register);
 });
 
-// Make toolbar click “just work”
 chrome.action.onClicked.addListener(async (tab) => {
   if (!tab?.id || !tab.url?.startsWith("http")) return;
   const origin = new URL(tab.url).origin + "/*";
 
-  // Ask for this origin, then register and run immediately
   chrome.permissions.request({ origins: [origin] }, async (granted) => {
     if (!granted) return;
     await register(origin);
 
-    // Persist so it keeps working on reloads (satisfies 'storage' use)
     chrome.storage.sync.get({ [STORAGE_KEY]: [] }, data => {
       const list = new Set(data[STORAGE_KEY] || []);
       list.add(origin);
       chrome.storage.sync.set({ [STORAGE_KEY]: [...list] });
     });
 
-    // Run now so the reviewer sees the effect instantly
     await chrome.scripting.executeScript({
       target: { tabId: tab.id },
       files: ["content.js"]

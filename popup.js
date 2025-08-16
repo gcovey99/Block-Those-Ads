@@ -1,4 +1,3 @@
-// Elements
 const domainInput = document.getElementById('domainInput');
 const addBtn = document.getElementById('addBtn');
 const siteList = document.getElementById('siteList');

@@ -10,7 +10,7 @@ function nuke() {
   }
 }
 
-// Run now + on future mutations
+
 nuke();
 new MutationObserver(nuke).observe(document.documentElement || document.body, {
   childList: true,
