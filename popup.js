@@ -1,7 +1,12 @@
-
+// Elements
 const domainInput = document.getElementById('domainInput');
-const addBtn       = document.getElementById('addBtn');
-const siteList     = document.getElementById('siteList');
+const addBtn = document.getElementById('addBtn');
+const siteList = document.getElementById('siteList');
+
+function normalizeToOriginPattern(value) {
+  const u = new URL(value);
+  return `${u.origin}/*`;
+}
 
 function renderList() {
   chrome.storage.sync.get({ allowedSites: [] }, ({ allowedSites }) => {
@@ -9,71 +14,54 @@ function renderList() {
     allowedSites.forEach(origin => {
       const li = document.createElement('li');
       li.textContent = origin;
-
       const rm = document.createElement('button');
       rm.textContent = 'Remove';
       rm.style.marginLeft = '8px';
-      rm.addEventListener('click', () => removeSite(origin));
-
+      rm.onclick = () => removeSite(origin);
       li.appendChild(rm);
       siteList.appendChild(li);
     });
   });
 }
 
-// ---- Add a new site ----
 function addSite() {
-  let url = domainInput.value.trim();
-  if (!url) return;
+  const raw = domainInput.value.trim();
+  if (!raw) return;
+  let originPattern;
+  try { originPattern = normalizeToOriginPattern(raw); }
+  catch { return alert('Enter a valid URL like https://example.com'); }
 
-  try {
-    const u = new URL(url);
-    url = `${u.origin}/*`;
-  } catch {
-    return alert('Please enter a valid URL (e.g. https://example.com)');
-  }
-
-  chrome.permissions.request({ origins: [url] }, granted => {
-    if (!granted) return alert('Permission denied for ' + url);
-
+  chrome.permissions.request({ origins: [originPattern] }, granted => {
+    if (!granted) return alert('Permission denied');
     chrome.storage.sync.get({ allowedSites: [] }, ({ allowedSites }) => {
-      if (!allowedSites.includes(url)) {
-        allowedSites.push(url);
+      if (!allowedSites.includes(originPattern)) {
+        allowedSites.push(originPattern);
         chrome.storage.sync.set({ allowedSites }, () => {
-          renderList();
           domainInput.value = '';
+          renderList();
         });
       }
     });
   });
 }
 
-// ---- Remove a site ----
-function removeSite(origin) {
-  chrome.permissions.remove({ origins: [origin] }, removed => {
-    if (!removed) return alert('Couldn’t revoke permission for ' + origin);
-
+function removeSite(originPattern) {
+  chrome.permissions.remove({ origins: [originPattern] }, removed => {
+    if (!removed) return;
     chrome.storage.sync.get({ allowedSites: [] }, ({ allowedSites }) => {
-      const updated = allowedSites.filter(o => o !== origin);
-      chrome.storage.sync.set({ allowedSites: updated }, renderList);
+      chrome.storage.sync.set({
+        allowedSites: allowedSites.filter(o => o !== originPattern)
+      }, renderList);
     });
   });
 }
 
-// ---- popup open ----
 document.addEventListener('DOMContentLoaded', () => {
   renderList();
-
-  // Pre-fill with current tab’s origin
-  chrome.tabs.query({ active: true, currentWindow: true }, tabs => {
-    if (!tabs[0]?.url) return;
-    try {
-      const origin = new URL(tabs[0].url).origin;
-      domainInput.value = `${origin}/*`;
-    } catch {
-      // ignore parse errors
-    }
+  
+  chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+    if (!tab?.url?.startsWith('http')) return;
+    try { domainInput.value = normalizeToOriginPattern(tab.url); } catch {}
   });
-
   addBtn.addEventListener('click', addSite);
 });

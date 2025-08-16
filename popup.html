@@ -3,15 +3,19 @@
 <head>
   <meta charset="utf-8">
   <style>
-    body { width: 300px; font-family: sans-serif; }
+    body { width: 350px; font-family: sans-serif; height: auto;padding: 10px;}
     #siteList li { margin: 4px 0; }
-    button { margin-left: 8px; }
+    button {padding: 4px 10px;background: #81e78a;cursor: pointer;}
+    button:hover{background: #cdfcc6;}
   </style>
 </head>
 <body>
   <h4>Block ads on…</h4>
-  <input id="domainInput" type="text" placeholder="https://example.com" style="width:100%">
+  <small>Place an (*) at the end of a website to block all pages within that site.</small>
+  <input id="domainInput" type="text" placeholder="https://example.com" style="width:100%;margin-bottom: 7px;">
   <button id="addBtn">Add</button>
+  <hr>
+  <h4>Sites blocked...</h4>
   <ul id="siteList"></ul>
   <script src="popup.js"></script>
 </body>

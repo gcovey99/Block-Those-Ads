@@ -1,34 +1,26 @@
 {
   "manifest_version": 3,
   "name": "Block Those Ads",
-  "version": "1.2",
-  "description": "Block Those Ads removes most ads on any website by blocking known ad domains and removing ad elements from the page.",
-  "icons": {
-    "128": "icon128.png"
-  },
+  "version": "1.3.3",
+  "description": "Blocks ads on sites you add. Click the icon to enable on the current site.",
+  "icons": { "128": "icon128.png" },
+
+  "action": { "default_popup": "popup.html", "default_title": "Block Those Ads" },
+
   "permissions": [
-    "declarativeNetRequest"
+    "declarativeNetRequest",
+    "scripting",
+    "activeTab",
+    "tabs",
+    "storage"
   ],
-  "host_permissions": [
-    "<all_urls>"
-  ],
-  "background": {
-    "service_worker": "background.js"
-  },
-  "content_scripts": [
-    {
-      "matches": ["<all_urls>"],
-      "js": ["content.js"],
-      "run_at": "document_end"
-    }
-  ],
+  "optional_host_permissions": ["<all_urls>"],
+
+  "background": { "service_worker": "background.js" },
+
   "declarative_net_request": {
     "rule_resources": [
-      {
-        "id": "adBlockRules",
-        "enabled": true,
-        "path": "rules.json"
-      }
+      { "id": "adBlockRules", "enabled": true, "path": "rules.json" }
     ]
   }
 }

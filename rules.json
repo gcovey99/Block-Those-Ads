@@ -4,18 +4,16 @@
     "priority": 1,
     "action": { "type": "block" },
     "condition": {
-      "urlFilter": "|https://pagead2.googlesyndication.com^",
-      "resourceTypes": ["script", "image", "xmlhttprequest"]
-    }
-  },
-  {
-    "id": 2,
-    "priority": 1,
-    "action": { "type": "block" },
-    "condition": {
-      "urlFilter": "||googleads.g.doubleclick.net^",
-      "resourceTypes": ["script", "image", "xmlhttprequest"]
+      "requestDomains": [
+        "googleads.g.doubleclick.net",
+        "pagead2.googlesyndication.com",
+        "securepubads.g.doubleclick.net",
+        "adservice.google.com",
+        "googlesyndication.com"
+      ],
+      "resourceTypes": [
+        "script","image","xmlhttprequest","media","sub_frame","stylesheet","font","websocket"
+      ]
     }
   }
-  
 ]
